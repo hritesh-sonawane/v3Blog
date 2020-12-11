@@ -1,47 +1,67 @@
 <template>
-  <card 
-    v-for="post in store.state.posts"
-  >
-  <template v-slot:title>
-    {{ post.title }}
-  </template>
+  <label for="search">Search Hashtag: #</label>
+  <input id="search" type="text" :value="currentHashtag" @input="setHashtag" />
+  <div class="cards">
+    <card 
+      v-for="post in filteredPosts"
+    >
+      <template v-slot:title>
+        {{ post.title }}
+      </template>
 
-  <template v-slot:content>
-    {{ post.content }}
-  </template>
+      <template v-slot:content>
+        {{ post.content }}
+      </template>
 
-  <template v-slot:description>
-    <Controls :post="post" />
-  </template>
-  </card>
-  {{ currentHashtag }}
+      <template v-slot:description>
+        <controls 
+          :post="post" 
+        />
+      </template>
+    </card>
+  </div>
 </template>
 
 <script>
 import { store } from './store'
 import Card from './Card.vue'
 import Controls from './Controls.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-  export default {
-    components: {
-      Card,
-      Controls
-    },
-    setup() {
-      const currentHashtag = ref()
-      const setHashtag = (tag) => {
-        currentHashtag.value = tag
-      }
-      return {
-        store,
-        setHashtag, 
-        currentHashtag
-      }
+export default {
+  components: {
+    Card,
+    Controls
+  },
+  setup() {
+    const setHashtag = (evt) => {
+      store.setHashtag(evt.target.value)
+    }
+    return {
+      filteredPosts: store.filteredPosts,
+      setHashtag,
+      currentHashtag: computed(() => store.state.currentHashtag)
     }
   }
+}
 </script>
 
-<style scoped>
-
+<style>
+input {
+  height: 30px;
+  font-size: 18px;
+  border: none;
+  border-bottom: 1px solid grey;
+  outline: none;
+}
+.cards {
+  margin: 10px 0;
+  display: flex;
+}
+.title {
+  height: 40px;
+}
+.content {
+  height: 150px;
+}
 </style>

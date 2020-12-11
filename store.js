@@ -1,57 +1,41 @@
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
+import { testPosts } from './testPosts.js'
 
 class Store {
   constructor() {
     this.state = reactive({
-      posts: [
-        {
-          id: 1,
-          title: 'Learning Vue.js 3',
-          content: 'I am learning Vue.js 3 with the composition API. It is great!',
-          likes: 10,
-          hashtags: [
-            'vue',
-            'javascript',
-            'composition api'
-          ]
-        },
-        
-        {
-          id: 2,
-          title: 'Learning Vuex',
-          content: 'Vuex is a state management solution for Vue. It allows you to logically separate entities into modules.',
-          likes: 14,
-          hashtags: [
-            'vue',
-            'vuex',
-            'flux'
-          ]
-        },
-        
-        {
-          id: 3,
-          title: 'Routing with Vue Router',
-          content: 'I am creating a complex front-end app using Vue Router.',
-          likes: 15,
-          hashtags: [
-            'vue',
-            'vue-router'
-          ]
-        },
-      
-        {
-          id: 4,
-          title: 'Testing Vue Apps',
-          content: 'I am writing some tests for my application using Vue Test Utils. Testing is critical by often overlooked due to complexity or time constraints.',
-          likes: 30,
-          hashtags: [
-            'vue',
-            'javascript',
-            'testing'
-          ]
-        }
-      ]
+      posts: testPosts,
+      currentHashtag: null
     })
+  }
+
+  get filteredPosts() {
+    return computed(() => {
+      if (!this.state.currentHashtag) {
+        return this.state.posts
+      }
+
+      return this.state.posts.filter(
+        post => post.hashtags.includes(
+          this.state.currentHashtag)
+      )
+    })
+  }
+
+  setHashtag(tag) {
+    this.state.currentHashtag = tag
+  }
+
+  incrementLike(post) {
+    const thePost = this.state.posts.find(x => 
+      x.id === post.id
+    )
+
+    if (!thePost) {
+      return
+    }
+
+    thePost.likes += 1
   }
 }
 
